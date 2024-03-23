@@ -11,6 +11,8 @@ import java.nio.file.*;
 import spark.*;
 import static spark.Spark.*;
 
+import com.google.common.util.concurrent.*;
+
 import com.asia.controller.*;
 
 public class Main {
@@ -26,6 +28,15 @@ public class Main {
     post("/spaces", spaceController::createSpace);
     after((request, response) -> {
         response.type("application/json");
+    });
+    
+    //Rate-limiter
+    var rateLimiter = RateLimiter.create(2.0d);
+    before((request, response) -> {
+      if (!rateLimiter.tryAcquire()) {
+        response.header("Retry-After", "2");
+        halt(429);
+      }
     });
 
     internalServerError(new JSONObject()

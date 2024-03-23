@@ -12,3 +12,11 @@ curl -i -d '{"name": "test space", "owner": "demo"}' http://localhost:4567/space
 curl -i -d "{\"name\": \"test'space\",\"owner\":\"demo\" }" http://localhost:4567/spaces
 
 curl -i -d "{\"name\": \"test\", \"owner\":\"'); DROP TABLE spaces; --\"}" http://localhost:4567/spaces 
+
+#Test rate-limiting
+for i in {1..5}
+> do
+curl -i -d "{\"owner\":\"test\",\"name\":\"space$i\"}" -H 'Content-Type: application/json' http://localhost:4567/spaces
+> done
+
+
