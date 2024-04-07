@@ -19,4 +19,10 @@ for i in {1..5}
 curl -i -d "{\"owner\":\"test\",\"name\":\"space$i\"}" -H 'Content-Type: application/json' http://localhost:4567/spaces
 > done
 
+#Authentication
+curl -d '{"name":"test space","owner":"demo"}' -H 'Content-Type: application/json' http://localhost:4567/spaces
+
+curl -d '{"username":"demo","password":"password"}' -H 'Content-Type: application/json' http://localhost:4567/users
+
+curl -u demo:password -d '{"name":"test space","owner":"demo"}' -H 'Content-Type: application/json' http://localhost:4567/spaces
 

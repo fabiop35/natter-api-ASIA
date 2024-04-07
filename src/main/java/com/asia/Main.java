@@ -26,6 +26,11 @@ public class Main {
 
     var spaceController = new SpaceController(database);
     post("/spaces", spaceController::createSpace);
+    
+    var userController = new UserController(database);
+    before(userController::authenticate);
+    post("/users", userController::registerUser);
+
     after((request, response) -> {
         response.type("application/json");
     });
