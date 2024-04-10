@@ -10,6 +10,7 @@ import java.nio.file.*;
 
 import spark.*;
 import static spark.Spark.*;
+import static spark.Spark.secure;
 
 import com.google.common.util.concurrent.*;
 
@@ -18,6 +19,8 @@ import com.asia.controller.*;
 public class Main {
 
   public static void main(String... args) throws Exception {
+    secure("localhost.p12", "changeit", null, null);
+
     var datasource = JdbcConnectionPool.create("jdbc:h2:mem:natter", "natter", "password");
     var database = Database.forDataSource(datasource);
     createTables(database);
@@ -64,6 +67,7 @@ public class Main {
     }));
     
     afterAfter((request, response) -> {
+    response.header("Strict-Transport-Security", "max-age=31536000");
     response.type("application/json;charset=utf-8");
     response.header("X-Content-Type-Options", "nosniff");
      response.header("X-Frame-Options", "DENY");

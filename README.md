@@ -26,3 +26,10 @@ curl -d '{"username":"demo","password":"password"}' -H 'Content-Type: applicatio
 
 curl -u demo:password -d '{"name":"test space","owner":"demo"}' -H 'Content-Type: application/json' http://localhost:4567/spaces
 
+
+#Request using HTTPS
+#prerequisite: mkcert (mkcert -install, mkcert -pkcs12 localhost
+
+curl --cacert "$(mkcert -CAROOT)/rootCA.pem" -d '{"username":"demo","password":"password"}' -H 'Content-Type: application/json' https://localhost:4567/users
+
+
