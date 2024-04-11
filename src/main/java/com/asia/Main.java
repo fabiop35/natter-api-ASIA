@@ -32,6 +32,11 @@ public class Main {
     
     var userController = new UserController(database);
     before(userController::authenticate);
+
+    var auditController = new AuditController(database);
+    before(auditController::auditRequestStart);
+    afterAfter(auditController::auditRequestEnd);
+    get("/logs", auditController::readAuditLog);
     post("/users", userController::registerUser);
 
     after((request, response) -> {

@@ -32,4 +32,7 @@ curl -u demo:password -d '{"name":"test space","owner":"demo"}' -H 'Content-Type
 
 curl --cacert "$(mkcert -CAROOT)/rootCA.pem" -d '{"username":"demo","password":"password"}' -H 'Content-Type: application/json' https://localhost:4567/users
 
+#View audit logs
+curl pem https://localhost:4567/logs | jq
+
 
