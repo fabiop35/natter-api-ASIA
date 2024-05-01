@@ -67,7 +67,6 @@ public class UserController {
 
         var hash = database.findOptional(String.class,
                 "SELECT pw_hash FROM users WHERE user_id = ?", username);
-
         if (hash.isPresent() && SCryptUtil.check(password, hash.get())) {
             request.attribute("subject", username);
         }

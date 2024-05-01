@@ -19,7 +19,6 @@ public class SpaceController {
     }
 
     public JSONObject createSpace(Request request, Response response) throws SQLException {
-
         var json = new JSONObject(request.body());
         var spaceName = json.getString("name");
 
@@ -39,7 +38,6 @@ public class SpaceController {
             //throw new IllegalArgumentException("invalid username: " + owner);
             throw new IllegalArgumentException("invalid username");
         }
-
         return database.withTransaction(tx -> {
             var spaceId = database.findUniqueLong("SELECT NEXT VALUE FOR space_id_seq;");
 
@@ -59,6 +57,7 @@ public class SpaceController {
         var user = json.getString("author");
         if (!user.matches("[a-zA-Z][a-zA-Z0-9]{0,29}")) {
             throw new IllegalArgumentException("invalid username");
+
         }
         var message = json.getString("message");
         if (message.length() > 1024) {

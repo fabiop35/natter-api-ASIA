@@ -20,6 +20,7 @@ public class Main {
 
     public static void main(String... args) throws Exception {
         //secure("localhost.p12", "changeit", null, null);
+        Spark.staticFiles.location("/public");
 
         var datasource = JdbcConnectionPool.create("jdbc:h2:mem:natter", "natter", "password");
         var database = Database.forDataSource(datasource);
