@@ -68,7 +68,17 @@ curl -u demo2:password -H 'Content-Type: application/json' -d '{"username":"evil
 
 curl -i -X DELETE -u evildemo2:password https://localhost:4567/spaces/1/messages/1
 
+#Get a new session cookie
+curl -H 'Content-Type: application/json' -d '{"username":"test","password":"password"}' http://localhost:4567/users
 
+curl -i -u test:password -H 'Content-Type: application/json' -X POST http://localhost:4567/sessions
+
+#Validating session cookie
+curl -H 'Content-Type: application/json' -d '{"username":"test","password":"password"}' http://localhost:4567/users
+
+ curl -i -c ~/cookies -u test:password -H 'Content-Type: application/json' -X POST http://localhost:4567/sessions
+
+curl -b ~/cookies -H 'Content-Type: application/json' -d '{"name":"test space","owner":"test"}' http://localhost:4567/spaces
 
 
 

@@ -15,6 +15,8 @@ import static spark.Spark.secure;
 import com.google.common.util.concurrent.*;
 
 import com.asia.controller.*;
+import com.asia.token.TokenStore;
+import com.asia.token.CookieTokenStore;
 
 public class Main {
 
@@ -30,11 +32,23 @@ public class Main {
 
         var spaceController = new SpaceController(database);
         //post("/spaces", spaceController::createSpace);
-
         var userController = new UserController(database);
+
+        /* TOKEN-BASED AUTHENTICATION */
+        TokenStore tokenStore = new CookieTokenStore();
+        var tokenController = new TokenController(tokenStore);
         before(userController::authenticate);
+        //before(tokenController::validateToken);
+        before( (req, res) -> tokenController.validateToken(req, res));
 
         var auditController = new AuditController(database);
+        before(auditController::auditRequestStart);
+        afterAfter(auditController::auditRequestEnd);
+        before("/sessions", userController::requireAuthentication);
+        post("/sessions", tokenController::login);
+
+        before(userController::authenticate);
+
         before(auditController::auditRequestStart);
         afterAfter(auditController::auditRequestEnd);
         System.out.println("XXX requireAuthentication.");
@@ -50,21 +64,21 @@ public class Main {
                 userController.requirePermission("GET", "r"));
         get("/spaces/:spaceId/messages/:msgId", spaceController::readMessage);
 
-      before("/spaces/:spaceId/messages",
-      userController.requirePermission("GET", "r"));
+        before("/spaces/:spaceId/messages",
+                userController.requirePermission("GET", "r"));
 
-      get("/spaces/:spaceId/messages",
-            spaceController::findMessages);
+        get("/spaces/:spaceId/messages",
+                spaceController::findMessages);
 
         get("/logs", auditController::readAuditLog);
         post("/users", userController::registerUser);
         before("/spaces/:spaceId/members",
-        userController.requirePermission("POST", "rwd"));
+                userController.requirePermission("POST", "rwd"));
         post("/spaces/:spaceId/members", spaceController::addMember);
 
-	var moderatorController = new ModeratorController(database);
-	before("/spaces/:spaceId/messages/*", userController.requirePermission("DELETE", "d"));
-	delete("/spaces/:spaceId/messages/:msgId", moderatorController::deletePost);
+        var moderatorController = new ModeratorController(database);
+        before("/spaces/:spaceId/messages/*", userController.requirePermission("DELETE", "d"));
+        delete("/spaces/:spaceId/messages/:msgId", moderatorController::deletePost);
 
         after((request, response) -> {
             response.type("application/json");
