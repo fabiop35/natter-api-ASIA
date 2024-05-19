@@ -8,6 +8,7 @@ import com.asia.token.TokenStore.Token;
 import spark.*;
 
 import static java.time.Instant.now;
+import java.util.Optional;
 
 public class TokenController {
 
@@ -31,7 +32,21 @@ public class TokenController {
     public void validateToken(Request request, Response response) {
         System.out.println("INI: TokenController.validateToken");
         // WARNING: CSRF attack possible
-        tokenStore.read(request, null).ifPresent((Token token) -> {
+        /*Optional<Token> tkn = tokenStore.read(request, null);
+        if(tkn.isPresent()){
+           Token token = tkn.get();
+           if (now().isBefore(token.expiry)) {
+                System.out.println("Token.username: "+token.username);
+                request.attribute("subject", token.username);
+                token.attributes.forEach(request::attribute);
+            }
+        } */
+
+      var tokenId = request.headers("X-CSRF-Token");
+      if (tokenId == null) return;
+
+
+       tokenStore.read(request, tokenId).ifPresent((Token token) -> {
             if (now().isBefore(token.expiry)) {
                 System.out.println("Token.username: "+token.username);
                 request.attribute("subject", token.username);
