@@ -46,6 +46,7 @@ public class Main {
         afterAfter(auditController::auditRequestEnd);
         before("/sessions", userController::requireAuthentication);
         post("/sessions", tokenController::login);
+       delete("/sessions", tokenController::logout);
 
         before(userController::authenticate);
 

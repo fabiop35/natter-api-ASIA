@@ -77,8 +77,8 @@ public class UserController {
         System.out.println("INI: requireAuthentication");
         System.out.println("subject: " + request.attribute("subject"));
         if (request.attribute("subject") == null) {
-            response.header("WWW-Authenticate",
-                    "Basic realm=\"/\", charset=\"UTF-8\"");
+            //response.header("WWW-Authenticate",
+              //      "Basic realm=\"/\", charset=\"UTF-8\"");
             halt(401);
         }
     }

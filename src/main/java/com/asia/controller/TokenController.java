@@ -19,6 +19,7 @@ public class TokenController {
     }
 
     public JSONObject login(Request request, Response response) {
+        System.out.println("<<< TokenController.login >>>");
         String subject = request.attribute("subject");
         var expiry = now().plus(10, ChronoUnit.MINUTES);
         var token = new TokenStore.Token(expiry, subject);
@@ -54,4 +55,15 @@ public class TokenController {
             }
         });
     }
+
+  public JSONObject logout(Request request, Response response) {
+    
+    var tokenId = request.headers("X-CSRF-Token");
+    if (tokenId == null)
+        throw new IllegalArgumentException("missing token header");
+    tokenStore.revoke(request, tokenId);
+    response.status(200);
+
+    return new JSONObject();
+  }
 }

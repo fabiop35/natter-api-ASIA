@@ -12,7 +12,7 @@ public class CookieTokenStore implements TokenStore {
 
     @Override
     public String create(Request request, Token token) {
-
+        System.out.println("<<< CookieTokenStore.create.INI >>>");
         var session = request.session(false);
         if (session != null) {
             session.invalidate();
@@ -56,5 +56,18 @@ public class CookieTokenStore implements TokenStore {
             throw new IllegalStateException(e);
         }
     }
+
+  @Override
+  public void revoke(Request request, String tokenId) {
+    var session = request.session(false);
+    if (session == null) return;
+
+    var provided = Base64url.decode(tokenId);
+    var computed = sha256(session.id());
+   if (!MessageDigest.isEqual(computed, provided)) {
+      return;
+    }
+    session.invalidate();
+  }
 
 }
