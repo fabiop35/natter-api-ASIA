@@ -7,6 +7,7 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import org.json.*;
 
 import java.nio.file.*;
+import java.util.Set;
 
 import spark.*;
 import static spark.Spark.*;
@@ -17,6 +18,7 @@ import com.google.common.util.concurrent.*;
 import com.asia.controller.*;
 import com.asia.token.TokenStore;
 import com.asia.token.CookieTokenStore;
+import com.asia.filter.CorsFilter;
 
 public class Main {
 
@@ -93,6 +95,9 @@ public class Main {
                 halt(429);
             }
         });
+
+        //CORS
+        before(new CorsFilter(Set.of("http://localhost:9999")));
 
         internalServerError(new JSONObject()
                 .put("error", "internal server error").toString());
