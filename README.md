@@ -87,4 +87,14 @@ curl -i -c ~/cookies -u test:password -H 'Content-Type: application/json' -X POS
 
 curl -i -b ~/cookies -H 'Content-Type: application/json' -H 'X-CSRF-Token: gB7CiKkxx0FFsR4lhV9hsvA1nyT7Nw5YkJw_ysMm6ic' -d '{"name":"test space","owner":"test"}' http://localhost:4567/spaces
 
+###Replace Cookies With Tokens
+# 1. Create a user
+curl -H 'Content-Type: application/json' -d '{"username":"test","password":"password"}' http://localhost:4567/users
+
+# 2. call the login endpoint to obtain a session token
+curl -i -H 'Content-Type: application/json' -u test:password -X POST http://localhost:4567/sessions
+
+# 3. Create a Space, pass the token
+curl -i -H 'Content-Type: application/json' -H 'X-CSRF-Token: ' -d '{"name":"test","owner":"test"}' http://localhost:4567/spaces
+
 

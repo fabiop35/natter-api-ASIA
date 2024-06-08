@@ -18,6 +18,7 @@ import com.google.common.util.concurrent.*;
 import com.asia.controller.*;
 import com.asia.token.TokenStore;
 import com.asia.token.CookieTokenStore;
+import com.asia.token.DatabaseTokenStore;
 import com.asia.filter.CorsFilter;
 
 public class Main {
@@ -37,7 +38,8 @@ public class Main {
         var userController = new UserController(database);
 
         /* TOKEN-BASED AUTHENTICATION */
-        TokenStore tokenStore = new CookieTokenStore();
+        //TokenStore tokenStore = new CookieTokenStore();
+        TokenStore tokenStore = new DatabaseTokenStore(database);
         var tokenController = new TokenController(tokenStore);
         before(userController::authenticate);
         //before(tokenController::validateToken);
