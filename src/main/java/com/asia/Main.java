@@ -25,6 +25,7 @@ public class Main {
 
     public static void main(String... args) throws Exception {
         //secure("localhost.p12", "changeit", null, null);
+        port(args.length > 0 ? Integer.parseInt(args[0]) : spark.Service.SPARK_DEFAULT_PORT);
         Spark.staticFiles.location("/public");
 
         var datasource = JdbcConnectionPool.create("jdbc:h2:mem:natter", "natter", "password");

@@ -21,7 +21,7 @@ public class CorsFilter implements Filter {
     if (origin != null && allowedOrigins.contains(origin)) {
         System.out.println(">>> allowedOrigin");
         response.header("Access-Control-Allow-Origin", origin);
-        response.header("Access-Control-Allow-Credentials", "true");
+        //response.header("Access-Control-Allow-Credentials", "true");
         response.header("Vary", "Origin");
     }
  
