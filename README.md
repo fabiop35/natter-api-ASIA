@@ -97,4 +97,21 @@ curl -i -H 'Content-Type: application/json' -u test:password -X POST http://loca
 # 3. Create a Space, pass the token
 curl -i -H 'Content-Type: application/json' -H 'X-CSRF-Token: ' -d '{"name":"test","owner":"test"}' http://localhost:4567/spaces
 
+# Test Bearer token
+curl -i -H 'Content-Type: application/json' -H 'Authorization: Bearer ' -d '{"name":"test","owner":"test"}' http://localhost:4567/spaces
+
+###JWT
+#Generating a 256-bit HMAC KEY (Create a keystore)
+keytool -genseckey -keyalg HmacSHA256 -keysize 256 -alias hmac-key -keystore keystore.p12 -storetype PKCS12 -storepass changeit
+
+#Shows the secret key keeps by the  keystore(keystore.p12)
+java -cp target/natter-api-ASIA-1.0.0-SNAPSHOT.jar com.asia.ShowKey
+
+#System property with the keystore password
+-Dkeystore.password=changeit
+
+#Start MariaDB
+cd '/data/data/com.termux/files/usr' ; /data/data/com.termux/files/usr/bin/mariadbd-safe --datadir='/data/data/com.termux/files/usr/var/lib/mysql'
+
+
 

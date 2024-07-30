@@ -1,0 +1,7 @@
+{
+    "kty": "oct",
+    "kid": "c7a60f45-bbd3-436e-8fcb-17d92720b9fb",
+    "k": "kkfh9TSePEpWzIbYV07YLYFt6VFIAekmhjAc1Jl6MlU",
+    "alg": "HS256",
+    "iat": 1722094364
+}

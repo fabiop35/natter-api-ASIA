@@ -1,6 +1,6 @@
 package com.asia.controller;
 
-import com.lambdaworks.crypto.*;
+import com.lambdaworks.crypto.SCryptUtil;
 import org.dalesbred.*;
 import org.json.*;
 import spark.*;
@@ -41,14 +41,16 @@ public class UserController {
 
         response.status(201);
         response.header("Location", "/users/" + username);
+        System.out.println(">>>UserControler.registerUser().request.body(): " + request.body());
+
         return new JSONObject().put("username", username);
     }
 
     public void authenticate(Request request, Response response) {
 
-        System.out.println("authenticate.INIT");
+        System.out.println(">UserController.authenticate().INIT");
         var authHeader = request.headers("Authorization");
-        System.out.println("authHeader: "+authHeader);
+        System.out.println(">UserController.authenticate().authHeader: " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Basic ")) {
             return;
@@ -74,11 +76,11 @@ public class UserController {
 
     public void requireAuthentication(Request request, Response response) {
 
-        System.out.println("INI: requireAuthentication");
+        System.out.println(">UserController.requireAuthentication() <<<");
         System.out.println("subject: " + request.attribute("subject"));
         if (request.attribute("subject") == null) {
             //response.header("WWW-Authenticate",
-              //      "Basic realm=\"/\", charset=\"UTF-8\"");
+            //      "Basic realm=\"/\", charset=\"UTF-8\"");
             halt(401);
         }
     }
@@ -92,8 +94,8 @@ public class UserController {
             var spaceId = Long.parseLong(request.params(":spaceId"));
             var username = (String) request.attribute("subject");
             String perms = database.findOptional(String.class, "SELECT perms FROM permissions WHERE space_id = ? AND user_id = ?", spaceId, username).orElse("");
-	    System.out.println("perms: "+perms);
-            System.out.println("@perms: "+perms);
+            System.out.println("perms: " + perms);
+            System.out.println("@perms: " + perms);
 
             if (!perms.contains(permission)) {
                 halt(403);

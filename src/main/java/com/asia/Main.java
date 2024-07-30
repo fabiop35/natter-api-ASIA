@@ -4,22 +4,39 @@ import org.dalesbred.Database;
 import org.dalesbred.result.EmptyResultException;
 
 import org.h2.jdbcx.JdbcConnectionPool;
-import org.json.*;
 
-import java.nio.file.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Set;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import spark.*;
-import static spark.Spark.*;
+import static spark.Spark.after;
+import static spark.Spark.afterAfter;
+import static spark.Spark.before;
+import static spark.Spark.delete;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.internalServerError;
+import static spark.Spark.notFound;
+import static spark.Spark.port;
+import static spark.Spark.post;
 import static spark.Spark.secure;
 
-import com.google.common.util.concurrent.*;
+import com.google.common.util.concurrent.RateLimiter;
 
 import com.asia.controller.*;
 import com.asia.token.TokenStore;
 import com.asia.token.CookieTokenStore;
 import com.asia.token.DatabaseTokenStore;
 import com.asia.filter.CorsFilter;
+import com.asia.token.HmacTokenStore;
+
 
 public class Main {
 
@@ -40,18 +57,26 @@ public class Main {
 
         /* TOKEN-BASED AUTHENTICATION */
         //TokenStore tokenStore = new CookieTokenStore();
-        TokenStore tokenStore = new DatabaseTokenStore(database);
+        /* Loading the HMAC key (5.12) */
+        var keyPassword = System.getProperty("keystore.password", "changeit").toCharArray();
+        var keyStore = KeyStore.getInstance("PKCS12");
+        keyStore.load(new FileInputStream("keystore.p12"), keyPassword);
+        var macKey = keyStore.getKey("hmac-key", keyPassword);
+
+        var databaseTokenStore = new DatabaseTokenStore(database);
+        TokenStore tokenStore = new HmacTokenStore(databaseTokenStore, macKey);
+        // TokenStore tokenStore = new DatabaseTokenStore(database);
         var tokenController = new TokenController(tokenStore);
         before(userController::authenticate);
         //before(tokenController::validateToken);
-        before( (req, res) -> tokenController.validateToken(req, res));
+        before((req, res) -> tokenController.validateToken(req, res));
 
         var auditController = new AuditController(database);
         before(auditController::auditRequestStart);
         afterAfter(auditController::auditRequestEnd);
         before("/sessions", userController::requireAuthentication);
         post("/sessions", tokenController::login);
-       delete("/sessions", tokenController::logout);
+        delete("/sessions", tokenController::logout);
 
         before(userController::authenticate);
 

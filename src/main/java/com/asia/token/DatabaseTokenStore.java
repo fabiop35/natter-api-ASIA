@@ -22,13 +22,23 @@ public class DatabaseTokenStore implements TokenStore {
     }
 
     private String randomId() {
+        System.out.println(">>>DatabaseTokenStore.randomId() <<<");
         var bytes = new byte[20];
         secureRandom.nextBytes(bytes);
+        System.out.println(">>>DatabaseToken.randomId().20_bytes[]___random: ");
+        for (int i = 0; i < bytes.length; i++) {
+            System.out.print(bytes[i] + "|");
+        }
+        System.out.println();
+        byte bytesHardCode[] = {-55, 91, -54, 5, 11, -57, 22, -17, -116, -48, 91, 16, -35, 68, 56, 97, 11, 125, -89, 68};
+        System.out.println(">>>DatabaseTokenStore.randomId()bytesHardCode.length: " + bytesHardCode.length);
+        System.out.println(">>>DatabaseTokenStore.randomId().Base64url.encode(bytes): " + Base64url.encode(bytes));
         return Base64url.encode(bytes);
     }
 
     @Override
     public String create(Request request, Token token) {
+        System.out.println(">>>DatabaseTokenStore.create() <<<");
         var tokenId = randomId();
         var attrs = new JSONObject(token.attributes).toString();
         database.updateUnique("INSERT INTO tokens(token_id, user_id, expiry, attributes) VALUES(?, ?, ?, ?)", tokenId, token.username, token.expiry, attrs);
@@ -38,8 +48,8 @@ public class DatabaseTokenStore implements TokenStore {
 
     @Override
     public Optional<Token> read(Request request, String tokenId) {
-        System.out.println(">>> INI: DatabaseTokenStore.READ("+request.toString()+", "+tokenId+") <<<");
-            return database.findOptional(rs -> this.readToken(rs), "SELECT user_id, expiry, attributes "
+        System.out.println(">>> INI: DatabaseTokenStore.READ(" + request.toString() + ", " + tokenId + ") <<<");
+        return database.findOptional(rs -> this.readToken(rs), "SELECT user_id, expiry, attributes "
                 + "FROM tokens WHERE token_id = ?", tokenId);
 
         /*Optional<ResultSet> rs;
@@ -50,7 +60,7 @@ public class DatabaseTokenStore implements TokenStore {
     }
 
     private Token readToken(ResultSet resultSet) throws SQLException {
-        System.out.println(">>> INI: DatabaseTokenStore.READTOKEN("+resultSet.toString()+") <<<");
+        System.out.println(">>> INI: DatabaseTokenStore.READTOKEN(" + resultSet.toString() + ") <<<");
         var username = resultSet.getString(1);
         var expiry = resultSet.getTimestamp(2).toInstant();
         var json = new JSONObject(resultSet.getString(3));
