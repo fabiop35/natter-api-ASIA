@@ -14,7 +14,10 @@ import java.security.KeyStore;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import spark.*;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
+
 import static spark.Spark.after;
 import static spark.Spark.afterAfter;
 import static spark.Spark.before;
@@ -36,6 +39,7 @@ import com.asia.token.CookieTokenStore;
 import com.asia.token.DatabaseTokenStore;
 import com.asia.filter.CorsFilter;
 import com.asia.token.HmacTokenStore;
+import com.asia.token.JsonTokenStore;
 
 
 public class Main {
@@ -64,7 +68,9 @@ public class Main {
         var macKey = keyStore.getKey("hmac-key", keyPassword);
 
         var databaseTokenStore = new DatabaseTokenStore(database);
-        TokenStore tokenStore = new HmacTokenStore(databaseTokenStore, macKey);
+        TokenStore tokenStore = new JsonTokenStore();
+        tokenStore = new HmacTokenStore(tokenStore, macKey);
+        //TokenStore tokenStore = new HmacTokenStore(databaseTokenStore, macKey);
         // TokenStore tokenStore = new DatabaseTokenStore(database);
         var tokenController = new TokenController(tokenStore);
         before(userController::authenticate);

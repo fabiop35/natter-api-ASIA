@@ -114,4 +114,11 @@ java -cp target/natter-api-ASIA-1.0.0-SNAPSHOT.jar com.asia.ShowKey
 cd '/data/data/com.termux/files/usr' ; /data/data/com.termux/files/usr/bin/mariadbd-safe --datadir='/data/data/com.termux/files/usr/var/lib/mysql'
 
 
+#git ssh connection
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+ssh -T git@github.com
+
+
+
 
