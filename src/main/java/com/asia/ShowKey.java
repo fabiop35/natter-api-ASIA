@@ -35,13 +35,20 @@ public class ShowKey {
 // get base64 encoded version of the key
             String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
 
-            System.out.println(encodedKey);
+            System.out.println("encodedKey.B64: " + encodedKey);
 
             //
             byte[] encodedKey2 = com.asia.token.Base64url.decode(encodedKey);
             SecretKey originalKey = new SecretKeySpec(encodedKey2, 0, encodedKey2.length, "AES");
 
-            System.out.println(originalKey);
+            System.out.println("original key: " + originalKey);
+            System.out.println("encodedKey2.lenght: " + encodedKey2.length);
+            System.out.println("encodedKey2.bytes[]: ");
+            for (int i = 0; i < encodedKey2.length; i++) {
+                System.out.print(encodedKey2[i] + "|");
+
+            }
+            System.out.println();
 
         }
     }

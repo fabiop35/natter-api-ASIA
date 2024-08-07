@@ -14,6 +14,8 @@ import java.security.KeyStore;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import javax.crypto.SecretKey;
+
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -33,13 +35,26 @@ import static spark.Spark.secure;
 
 import com.google.common.util.concurrent.RateLimiter;
 
-import com.asia.controller.*;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+
+import software.pando.crypto.nacl.SecretBox;
+
+import com.asia.controller.AuditController;
+import com.asia.controller.ModeratorController;
+import com.asia.controller.SpaceController;
+import com.asia.controller.UserController;
+import com.asia.controller.TokenController;
+
 import com.asia.token.TokenStore;
 import com.asia.token.CookieTokenStore;
 import com.asia.token.DatabaseTokenStore;
+import com.asia.token.EncryptedTokenStore;
 import com.asia.filter.CorsFilter;
 import com.asia.token.HmacTokenStore;
 import com.asia.token.JsonTokenStore;
+import com.asia.token.SignedJwtTokenStore;
 
 
 public class Main {
@@ -66,10 +81,17 @@ public class Main {
         var keyStore = KeyStore.getInstance("PKCS12");
         keyStore.load(new FileInputStream("keystore.p12"), keyPassword);
         var macKey = keyStore.getKey("hmac-key", keyPassword);
+        var encKey = keyStore.getKey("aes-key", keyPassword);
 
-        var databaseTokenStore = new DatabaseTokenStore(database);
-        TokenStore tokenStore = new JsonTokenStore();
-        tokenStore = new HmacTokenStore(tokenStore, macKey);
+        
+        /* Generate a signed JWT 
+        var algorithm = JWSAlgorithm.HS256;
+        var signer = new MACSigner((SecretKey) macKey);
+        var verifier = new MACVerifier((SecretKey) macKey); */
+        var naclKey = SecretBox.key(encKey.getEncoded());
+
+        TokenStore tokenStore = new EncryptedTokenStore(new JsonTokenStore(), naclKey);
+        //tokenStore = new HmacTokenStore(tokenStore, macKey);
         //TokenStore tokenStore = new HmacTokenStore(databaseTokenStore, macKey);
         // TokenStore tokenStore = new DatabaseTokenStore(database);
         var tokenController = new TokenController(tokenStore);
