@@ -55,7 +55,7 @@ import com.asia.filter.CorsFilter;
 import com.asia.token.HmacTokenStore;
 import com.asia.token.JsonTokenStore;
 import com.asia.token.SignedJwtTokenStore;
-
+import com.asia.token.EncryptedJwtTokenStore;
 
 public class Main {
 
@@ -90,7 +90,8 @@ public class Main {
         var verifier = new MACVerifier((SecretKey) macKey); */
         var naclKey = SecretBox.key(encKey.getEncoded());
 
-        TokenStore tokenStore = new EncryptedTokenStore(new JsonTokenStore(), naclKey);
+        //TokenStore tokenStore = new EncryptedTokenStore(new JsonTokenStore(), naclKey);
+        TokenStore tokenStore = new EncryptedJwtTokenStore((SecretKey) encKey);
         //tokenStore = new HmacTokenStore(tokenStore, macKey);
         //TokenStore tokenStore = new HmacTokenStore(databaseTokenStore, macKey);
         // TokenStore tokenStore = new DatabaseTokenStore(database);
