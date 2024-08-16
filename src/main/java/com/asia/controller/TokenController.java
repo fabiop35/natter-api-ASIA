@@ -10,11 +10,14 @@ import spark.*;
 import static java.time.Instant.now;
 import java.util.Optional;
 
+import com.asia.token.SecureTokenStore;
+
 public class TokenController {
 
-    private final TokenStore tokenStore;
+    //private final TokenStore tokenStore;
+    private final SecureTokenStore tokenStore;
 
-    public TokenController(TokenStore tokenStore) {
+    public TokenController(SecureTokenStore tokenStore) {
         this.tokenStore = tokenStore;
     }
 
@@ -36,7 +39,7 @@ public class TokenController {
     }
 
     public void validateToken(Request request, Response response) {
-        System.out.println("INI: TokenController.validateToken");
+        System.out.println("INI: TokenController.validateToken============================");
         // WARNING: CSRF attack possible
         /*Optional<Token> tkn = tokenStore.read(request, null);
         if(tkn.isPresent()){

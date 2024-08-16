@@ -56,6 +56,8 @@ import com.asia.token.HmacTokenStore;
 import com.asia.token.JsonTokenStore;
 import com.asia.token.SignedJwtTokenStore;
 import com.asia.token.EncryptedJwtTokenStore;
+import com.asia.token.SecureTokenStore;
+import com.asia.token.UnauthenticatedEncryptionStore;
 
 public class Main {
 
@@ -89,10 +91,26 @@ public class Main {
         var signer = new MACSigner((SecretKey) macKey);
         var verifier = new MACVerifier((SecretKey) macKey); */
         var naclKey = SecretBox.key(encKey.getEncoded());
+        System.out.println(">Main.main().naclKey: #raw key bytes");
+        byte[] naclKeyA = encKey.getEncoded();
+        System.out.println(">Main.main().naclKey.length: "+naclKeyA.length);
+        for(int i = 0; i < naclKeyA.length; i++){
+            System.out.print(naclKeyA[i]+"|");
+        }
 
         //TokenStore tokenStore = new EncryptedTokenStore(new JsonTokenStore(), naclKey);
-        TokenStore tokenStore = new EncryptedJwtTokenStore((SecretKey) encKey);
-        //tokenStore = new HmacTokenStore(tokenStore, macKey);
+        SecureTokenStore tokenStore = new EncryptedJwtTokenStore((SecretKey) encKey);
+        /* unauthenticate encryption and then authenticate with HMAC 
+         TokenStore tokenStoreDBDelegate = new DatabaseTokenStore(database);
+        UnauthenticatedEncryptionStore uath = new UnauthenticatedEncryptionStore(encKey, tokenStoreDBDelegate);
+        SecureTokenStore tokenStore = HmacTokenStore.wrap(uath, macKey); */
+        
+        /* Encrypt then Authenticate 
+        JsonTokenStore jsonTokenStore = new JsonTokenStore();
+        UnauthenticatedEncryptionStore uathTokenStore = new UnauthenticatedEncryptionStore(encKey, jsonTokenStore);
+        SecureTokenStore tokenStore = HmacTokenStore.wrap(uathTokenStore, macKey); */
+        
+        
         //TokenStore tokenStore = new HmacTokenStore(databaseTokenStore, macKey);
         // TokenStore tokenStore = new DatabaseTokenStore(database);
         var tokenController = new TokenController(tokenStore);

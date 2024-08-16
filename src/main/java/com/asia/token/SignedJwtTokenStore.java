@@ -19,7 +19,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
-public class SignedJwtTokenStore implements TokenStore {
+public class SignedJwtTokenStore implements AuthenticatedTokenStore {
 
     private final JWSSigner signer;
     private final JWSVerifier verifier;
@@ -65,7 +65,7 @@ public class SignedJwtTokenStore implements TokenStore {
         }
     }
 
-     @Override
+    @Override
     public Optional<Token> read(Request request, String tokenId) {
         try {
             var jwt = SignedJWT.parse(tokenId);
@@ -86,7 +86,6 @@ public class SignedJwtTokenStore implements TokenStore {
             return Optional.empty();
         }
     }
-    
 
     @Override
     public void revoke(Request request, String tokenId) {

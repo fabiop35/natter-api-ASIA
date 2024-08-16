@@ -26,7 +26,7 @@ public class ShowKey {
         try (FileInputStream fis = new FileInputStream(fileName)) {
             ks.load(fis, password);
             SecretKey secretKey = (SecretKey) ks.getKey(alias, password);
-            System.out.println(secretKey.getEncoded());
+            System.out.println(">secretKey.getEcoded: " + secretKey.getEncoded());
 
             System.out.println(new BigInteger(1, secretKey.getEncoded()).toString(16));
 
@@ -50,6 +50,23 @@ public class ShowKey {
             }
             System.out.println();
 
+        }
+
+        System.out.println("### Show nacl key (aes-key ###");
+        String fileName2 = "keystore.p12";
+        char[] password2 = "changeit".toCharArray();
+        String aliasNacl = "aes-key";
+        KeyStore ks2 = KeyStore.getInstance("PKCS12");
+        try (FileInputStream fis = new FileInputStream(fileName2)) {
+            ks2.load(fis, password2);
+            SecretKey secretKey2 = (SecretKey) ks2.getKey(aliasNacl, password2);
+            byte[] secretKeyA = secretKey2.getEncoded();
+            System.out.println("aes-key.bytes: ");
+            for (int i = 0; i < secretKeyA.length; i++) {
+                System.out.print(secretKeyA[i] + "|");
+            }
+            System.out.println();
+            System.out.println(new BigInteger(1, secretKey2.getEncoded()).toString(16));
         }
     }
 }
